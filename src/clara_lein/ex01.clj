@@ -1,4 +1,5 @@
 (ns clara-lein.ex01
+
   (:require [clara.rules :refer :all]))
 ;;; Taken directly from https://github.com/cerner/clara-rules
 ;;; But my slight modification: try to make a vector of facts to insert.
@@ -7,6 +8,9 @@
 (defrecord SupportRequest [client level])
 
 (defrecord ClientRepresentative [name client])
+
+(def facts [(->ClientRepresentative "Alice" "Acme")
+            (->SupportRequest "Acme" :high)])
 
 (defrule is-important
   "Find important support requests."
@@ -21,11 +25,9 @@
   =>
   (println "Notify" ?name "that"  ?client "has a new support request!"))
 
-;; Run the rules! We can just use Clojure's threading macro to wire things up.
-(-> (mk-session)
-    (insert (->ClientRepresentative "Alice" "Acme")
-            (->SupportRequest "Acme" :high))
-    (fire-rules))
+;; Fire rules, make facts into a var.
+(fire-rules (apply insert (flatten [(mk-session) facts])))
+
 
 ;;;; Prints this:
 
