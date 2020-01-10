@@ -34,13 +34,12 @@
   (insert! (->Tempstate ?id :fail "Low temp threshold")))
 
 
-
-;;;; (defrule high-temp
-;;;;   "Find Temperatures that are too high."
-;;;;   [Temperature (= ?id id) (= ?value value)]
-;;;;   [:test (> ?value 75)]
-;;;;   =>
-;;;;   (println (str "Temperature too high id = " ?id ", value = " ?value)))
+(defrule high-temp
+  "Find Temperatures that are too high."
+  [Temperature (= ?id id) (= ?value value)]
+  [:test (> ?value 75)]
+  =>
+  (insert! (->Tempstate ?id :fail "High temp threshold")))
 
 
 
@@ -49,18 +48,15 @@
 (fire-rules (apply insert (flatten [(mk-session) facts])))
 
 
-;;; Query result
-;; (defquery get-promotions
-;;   "Query to get Tempstates"
-;;   [:?passfail]
-;;   [?tempstate <- Tempstate (= ?passfail passfail)])
-
-
+;;; Queries
 (defquery get-tempstates
   "Query to get Tempstates"
   []
   [?tempstate <- Tempstate])
 
+
+
+;;; Execute
 ;; (query session get-tempstates)
 
 (defn run-ex
