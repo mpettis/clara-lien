@@ -1,6 +1,8 @@
 (ns clara-lein.ex03
   (:require [clara.rules :refer :all]))
 
+;; (in-ns 'clara-lein.ex03)
+;; (ns 'clara-lein.ex03)
 ;; (use 'clara-lein.ex03 :reload)
 
 ;;;; Let's do the same high/low temperature example, but instead of just
@@ -14,14 +16,12 @@
 
 
 
-
 ;;; Define facts in this var, to be used below
 (def facts [(->Temperature 1 65)
             (->Temperature 2 68)
             (->Temperature 3 71)
             (->Temperature 4 74)
             (->Temperature 5 77)])
-
 
 
 
@@ -59,11 +59,16 @@
 ;;; Execute
 ;; (query session get-tempstates)
 
-(defn run-ex
-  []
-  (let [sess (mk-session)
-        sess-fired (fire-rules (apply insert (flatten [sess facts])))]
-    (query sess-fired get-tempstates)))
+;;; (defn run-ex
+;;;   "Run a session, keep cleaner environment"
+;;;   []
+;;;   (let [sess (mk-session)
+;;;         sess-fired (fire-rules (apply insert (flatten [sess facts])))]
+;;;     (query sess-fired get-tempstates)))
+;;; (run-ex)
 
-(run-ex)
+(let [sess (mk-session)
+      sess-fired (fire-rules (apply insert (flatten [sess facts])))]
+  (query sess-fired get-tempstates))
+
 
