@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [com.cerner/clara-rules "0.20.0"]
                  [org.clojure/tools.namespace "0.3.1"]
-                 [clj-time "0.15.2"]]
+                 [clj-time "0.15.2"]
+                 [org.clojure/math.combinatorics "0.1.6"]]
   ;;:repl-options {:init-ns clara-lein.core}
   )
 

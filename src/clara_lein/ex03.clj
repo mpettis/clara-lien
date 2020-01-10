@@ -1,13 +1,16 @@
 (ns clara-lein.ex03
   (:require [clara.rules :refer :all]))
 
+;;;; Let's do a high/low temperature example, but instead of just
+;;;; printing a warning, let's insert records to indicate issues.  And then
+;;;; query them.
+
+
+;;; Example commands for repl... not necessary.
 ;; (in-ns 'clara-lein.ex03)
 ;; (ns 'clara-lein.ex03)
 ;; (use 'clara-lein.ex03 :reload)
 
-;;;; Let's do the same high/low temperature example, but instead of just
-;;;; printing a warning, let's insert records to indicate issues.  And then
-;;;; query them.
 
 
 ;;; Define records to use
@@ -44,8 +47,6 @@
 
 
 
-;;; Fire rules, the facts are stored in `facts` var.
-(fire-rules (apply insert (flatten [(mk-session) facts])))
 
 
 ;;; Queries
@@ -56,19 +57,19 @@
 
 
 
-;;; Execute
+;;;; Execute
+
+;;; Fire rules, the facts are stored in `facts` var.
+;;(fire-rules (apply insert (flatten [(mk-session) facts])))
+
+;;; Typical query template -- doesn't work as coded, need to assign 'session
 ;; (query session get-tempstates)
 
-;;; (defn run-ex
-;;;   "Run a session, keep cleaner environment"
-;;;   []
-;;;   (let [sess (mk-session)
-;;;         sess-fired (fire-rules (apply insert (flatten [sess facts])))]
-;;;     (query sess-fired get-tempstates)))
-;;; (run-ex)
 
-(let [sess (mk-session)
-      sess-fired (fire-rules (apply insert (flatten [sess facts])))]
+
+;;; Fire rules and get results
+(let [sess-init (mk-session)
+      sess-facts (apply insert (flatten [sess-init facts]))
+      sess-fired (fire-rules sess-facts)]
   (query sess-fired get-tempstates))
-
 
