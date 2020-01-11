@@ -21,7 +21,6 @@
 ;;;; Logic of generators based on logic found here:
 ;;;; https://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
 ;;;;
-;;;; (#clara_lein.ex04.Candidate{:id 21, :yo7 :eric, :yo8 :peter, :yo9 :arnold, :january :eric, :april :peter, :september :arnold})
 
 ;;; Candidate facts
 (defrecord Candidate [id yo7 yo8 yo9 january april september])
@@ -99,3 +98,5 @@
   (println "Successful assignment")
   (filter #(= id-success (:id %)) candidates))
 
+;;;; Answer gotten:
+;;;; (#clara_lein.ex04.Candidate{:id 21, :yo7 :eric, :yo8 :peter, :yo9 :arnold, :january :eric, :april :peter, :september :arnold})
