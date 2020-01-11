@@ -1,6 +1,7 @@
 (ns clara-lein.scratch
   (:require [clara.rules :refer :all]
-            [clojure.math.combinatorics :refer :all]))
+            [clojure.math.combinatorics :refer :all]
+            [clojure.set]))
 
 ;;; Candidate facts
 (defrecord Candidate [id yo7 yo8 yo9 january april september])
@@ -28,8 +29,29 @@
   [Candidate (= ?id id)]
   [:not [Candidate (= ?id id) (= april :peter)]]
   =>
-  (insert! (->Rulefail "rule-1" ?id))
-)
+  (insert! (->Rulefail "rule-1" ?id)))
+
+(defrule rule-2
+  "Eric is 7yo."
+  [Candidate (= ?id id)]
+  [:not [Candidate (= ?id id) (= yo7 :eric)]]
+  =>
+  (insert! (->Rulefail "rule-2" ?id)))
+
+(defrule rule-3
+  "Arnold's birthday is September."
+  [Candidate (= ?id id)]
+  [:not [Candidate (= ?id id) (= september :arnold)]]
+  =>
+  (insert! (->Rulefail "rule-3" ?id)))
+
+(defrule rule-4
+  "Peter is 8yo."
+  [Candidate (= ?id id)]
+  [:not [Candidate (= ?id id) (= yo8 :peter)]]
+  =>
+  (insert! (->Rulefail "rule-4" ?id)))
+
 
 
 
@@ -42,9 +64,17 @@
 
 
 ;;; Session and fire
+
 (let [sess-init (mk-session)
       sess-facts (apply insert (flatten [sess-init candidates]))
-      sess-fired (fire-rules sess-facts)]
-  (query sess-fired get-rulefail))
-
+      sess-fired (fire-rules sess-facts)
+      ;; All Rulefail objects returned in query
+      results (query sess-fired get-rulefail)
+      ;; Pull out ids of all candidates that failed a test, regardless of which
+      fail-candidate-ids (keys (group-by :candidate-id (map (comp first vals) results)))
+      ;; Collect ids for all failed candidates, setdiff possible candidate ids with failed ones.  Should leave 1 left.
+      id-success (first (clojure.set/difference (set (map :id candidates))  (set fail-candidate-ids)))]
+  ;; Retrieve record that has a successful id.
+  (println "Successful assignment")
+  (filter #(= id-success (:id %)) candidates))
 
