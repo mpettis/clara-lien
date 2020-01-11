@@ -4,14 +4,42 @@
 
 ;;;; A logic puzzle
 ;;;; 
-;;;; Code up logic puzzle rules with clara.  Use rules to code the problem
-;;;; constraints.  Use a 'for list comprehension to generate possible solutions
-;;;; to choose among.
+;;;; https://www.brainzilla.com/logic/logic-grid/basic-1/
 ;;;;
-;;;; See: https://programming-puzzler.blogspot.com/2013/03/logic-programming-is-overrated.html
+;;;; Full list:
+;;;; - 3 kids: Arnold, Eric, Peter
+;;;; - 3 ages: 7yo, 8yo, 9yo
+;;;; - 3 birthdays: January, April, September
+;;;;
+;;;; Clues:
+;;;; - Peter's birthday is April.
+;;;; - Eric is 7yo.
+;;;; - Arnold's birthday is September.
+;;;; - Peter is 8yo.
+;;;;
 
-;; This generates permutations
-(let [people [:amaya :bailey :jamari :jason :landon]]
-      (for [[fortune time cosmopolitan us-weekly vogue] (permutations people)]
-        (zipmap people [fortune time cosmopolitan us-weekly vogue])))
+
+
+;;; Makes all of the yo/birthday combos
+
+;(let [people [:arnold :eric :peter]]
+;  (for [[yo7 yo8 yo9] (permutations people)
+;        [january april september] (permutations people)]
+;    (merge
+;      (zipmap (map keyword '[yo7 yo8 yo9]) [yo7 yo8 yo9])
+;      (zipmap (map keyword '[january april september]) [january april september]))))
+
+
+
+;;; Define facts
+;;; These are potential combinations that may pass rule assertions.
+(def facts-possible-combos 
+  (let [people [:arnold :eric :peter]]
+    (for [[yo7 yo8 yo9] (permutations people)
+          [january april september] (permutations people)]
+      (merge
+        (zipmap (map keyword '[yo7 yo8 yo9]) [yo7 yo8 yo9])
+        (zipmap (map keyword '[january april september]) [january april september])))))
+
+
 
