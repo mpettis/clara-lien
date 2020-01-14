@@ -183,11 +183,19 @@
 
 
 ;;; Session and fire
-(->> (let [sess-init (mk-session)]
-       (for [cand cands]
-         (let [sess-fact (fire-rules (insert sess-init cand))]
-           (->> (query sess-fact get-rulefail)
-                (map :?rulefail)))))
-     (apply concat))
+(def rulefails
+  (->> (let [sess-init (mk-session)]
+         (for [cand cands]
+           (let [sess-fact (fire-rules (insert sess-init cand))]
+             (->> (query sess-fact get-rulefail)
+                  (map :?rulefail)))))
+       (apply concat)))
 
+;;; Extract failed rules from cands
+(->>
+  (let [rulefail-ids (set (map :id rulefails))]
+    (filter #(rulefail-ids (:id %)) cands))
+  (take 3)
+  (map #(println-str % "\n"))
+  println)
 
