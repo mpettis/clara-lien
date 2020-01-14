@@ -183,31 +183,11 @@
 
 
 ;;; Session and fire
-
-;;; ugh, works, but I'm sure I'm doing something wrong...
-;(let [sess-init (mk-session)]
-;  (->>
-;    (for [cand cands]
-;      (-> 
-;        (let [sess-fact (fire-rules (insert sess-init cand))]
-;          (query sess-fact get-rulefail))
-;        flatten))
-;    flatten
-;    (map vals)
-;    flatten
-;    (map :id)))
-
-(-> 
-  (let [sess-init (mk-session)]
-    (for [cand cands]
-      (let [sess-fact (fire-rules (insert sess-init cand))]
-        (flatten
-          (->> (query sess-fact get-rulefail)
-               (map :?rulefail)
-               (map :id))))))
-  flatten
-  set)
-        
-
+(->> (let [sess-init (mk-session)]
+       (for [cand cands]
+         (let [sess-fact (fire-rules (insert sess-init cand))]
+           (->> (query sess-fact get-rulefail)
+                (map :?rulefail)))))
+     (apply concat))
 
 
