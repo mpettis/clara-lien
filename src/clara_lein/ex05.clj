@@ -237,7 +237,7 @@
 (defrule rule-10
   "The Fortune subscriber is not Jamari."
   [Candidate (= ?id id) (= ?fortune fortune)]
-  [:test (not (= ?fortune :jamari))]
+  [:test (= ?fortune :jamari)]
   =>
   (insert! (->Rulefail "rule-10" ?id)))
 
@@ -330,8 +330,8 @@
 
 ;; Get that record from the candidates
 (filter #(= (:id %) (first soln-id-set)) cands)
-;; (#clara_lein.ex05.Candidate{:id 738075,
-;;    :fortune :jamari, :time :amaya, :cosmopolitan :jason, :us-weekly :landon, :vogue :bailey,
-;;    :asiago :bailey, :blue-cheese :jamari, :mascarpone :amaya, :mozzarella :jason, :muenster :landon,
-;;    :five :jason, :six :amaya, :seven :jamari, :seven-thirty :landon, :eight-thirty :bailey})
+;; (#clara_lein.ex05.Candidate{:id 132565,
+;;    :fortune :amaya, :time :jamari, :cosmopolitan :jason, :us-weekly :landon, :vogue :bailey,
+;;    :asiago :bailey, :blue-cheese :amaya, :mascarpone :jamari, :mozzarella :jason, :muenster :landon,
+;;    :five :jason, :six :jamari, :seven :amaya, :seven-thirty :landon, :eight-thirty :bailey})
 
