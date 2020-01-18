@@ -67,10 +67,6 @@
   '(five six seven seven-thirty eight-thirty))
 
 
-;; Put the time keywords in order
-;(def time-keywords
-;  (map keyword time-syms))
-
 
 
 
@@ -113,13 +109,14 @@
           ]
       (map map->Candidate (map #(into %1 {:id %2}) cand-short (range (count cand-short)))))))
 ;; On my machine:
-;; Elapsed time: 11507.3016 msecs
+;; Elapsed time: 29548.xxxx msecs
+
 
 ;; Count total number of candidate permutations
 (time (count cands))
 ;; On my machine:
 ;; count: 1728000 records
-;; Elapsed time: 5730.9774 msecs
+;; Elapsed time: 14705.xxxx msecs
 
 
 
@@ -268,6 +265,8 @@
 ;;;
 ;;; Strategy here is to loop over candidates and insert them into a fresh
 ;;; session, fire the rules, and collect the Rulefail facts.
+;;;
+;;; I think this is lazy-eval, as response is so fast.
 (time
   (def rulefails
     (->> (let [sess-init (mk-session)]
@@ -276,15 +275,16 @@
                (->> (query sess-fact get-rulefail)
                     (map :?rulefail)))))
          (apply concat))))
-;; Elapsed Time: 44.8767 msecs
+;; Elapsed Time: 278.xxxx msecs
 
 
 ;; How many total Rulefail facts are recorded, and how long did it take?
+;;
+;; I think this realizes the lazy list, so takes longer.
 (time
   (count rulefails))
 ;; 12,220,416
-;; Elapsed Time: 222204.2446 msecs
-;; Or 222 seconds, or about 3.5 minutes
+;; Elapsed Time: 531905.xxx msecs
 
 
 ;; Look at some sample failed rules
@@ -312,13 +312,16 @@
 ;; That's one less than total number of candidates, which is good!
 ;; There is then one solution (the rest are failures.)
 
+
+
 ;;; Extract failed rules from cands
-(->>
-  (let [rulefail-ids (set (map :id rulefails))]
-    (filter #(rulefail-ids (:id %)) cands))
-  (take 3)
-  (map #(println-str % "\n"))
-  println)
+;(->>
+;  (let [rulefail-ids (set (map :id rulefails))]
+;    (filter #(rulefail-ids (:id %)) cands))
+;  (take 3)
+;  (map #(println-str % "\n"))
+;  println)
+
 
 
 ;;; Get the sucessful record
@@ -326,7 +329,6 @@
   (def soln-id-set
     (clojure.set/difference (set (range 1728000)) fail-ids)))
 (first soln-id-set)
-;; 738075
 
 ;; Get that record from the candidates
 (filter #(= (:id %) (first soln-id-set)) cands)
@@ -334,4 +336,77 @@
 ;;    :fortune :amaya, :time :jamari, :cosmopolitan :jason, :us-weekly :landon, :vogue :bailey,
 ;;    :asiago :bailey, :blue-cheese :amaya, :mascarpone :jamari, :mozzarella :jason, :muenster :landon,
 ;;    :five :jason, :six :jamari, :seven :amaya, :seven-thirty :landon, :eight-thirty :bailey})
+
+
+
+
+;; How many candidates violated each of the rules?
+(->> rulefails
+     (map :rule-name)
+     frequencies)
+
+;; { "rule-1"  1589760
+;; , "rule-2"  1382400
+;; , "rule-3"   345600
+;; , "rule-4"  1645056
+;; , "rule-5"   345600
+;; , "rule-6"  1036800
+;; , "rule-7"  1036800
+;; , "rule-8"  1036800
+;; , "rule-9"  1036800
+;; , "rule-10"  345600
+;; , "rule-11" 1382400}
+
+(->>
+(map #(vals %) [{:a 2} {:b 5}])
+flatten  
+  )
+
+
+
+;; Did any candidates violate all 11 rules?
+(->> rulefails
+     (map :id)
+     frequencies
+     vals
+     (filter #(= 11 %))
+     count)
+;; Answer: 320
+
+;; List the one that failed all 11
+(->> rulefails
+     (map :id)
+     frequencies
+     (filter #(= 11 (second %))))
+
+
+
+
+
+;; Any violate just 1?
+(->> rulefails
+     (map :id)
+     frequencies
+     vals
+     (filter #(= 1 %))
+     count)
+;; Answer: 96
+
+;; List them
+(->> rulefails
+     (map :id)
+     frequencies
+     (filter #(= 1 (second %))))
+
+
+
+;; Let's get the rule violations for ones that violated just one rule.
+(let [fail-ids (->> rulefails
+                      (map :id)
+                      frequencies
+                      (filter #(= 1 (second %)))
+                      (map first)
+                      set)]
+  (filter #(fail-ids (:id %)) rulefails))
+
 

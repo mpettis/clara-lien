@@ -3,78 +3,27 @@
             [clojure.math.combinatorics :refer :all]
             [clojure.set]))
 
-;;; Candidate facts
-(defrecord Candidate [id yo7 yo8 yo9 january april september])
-
-;; Makes seq of Candidate records
-(def candidates
-  (let [people [:arnold :eric :peter]
-        map-list (for [[yo7 yo8 yo9] (permutations people)
-                       [january april september] (permutations people)]
-                   (merge
-                     (zipmap (map keyword '[yo7 yo8 yo9]) [yo7 yo8 yo9])
-                     (zipmap (map keyword '[january april september]) [january april september])))
-        id-maps (for [i (range (count map-list))] {:id i})
-        full-maps (map #(merge %1 %2) id-maps map-list)
-        rec-list (map map->Candidate full-maps)]
-    rec-list))
+(in-ns 'clara-lein.ex05)
 
 
+(ns-interns 'clara-lein.ex05)
 
-;;; Rules
-(defrecord Rulefail [rule-name candidate-id])
 
-(defrule rule-1
-  "Peter's birthday is April."
-  [Candidate (= ?id id)]
-  [:not [Candidate (= ?id id) (= april :peter)]]
-  =>
-  (insert! (->Rulefail "rule-1" ?id)))
+(clojure.core/all-ns)
+(clojure.core/refer-clojure)
+clojure.core/*ns*
+(clojure.core/ns-interns
+clojure.core/*ns*)
 
-(defrule rule-2
-  "Eric is 7yo."
-  [Candidate (= ?id id)]
-  [:not [Candidate (= ?id id) (= yo7 :eric)]]
-  =>
-  (insert! (->Rulefail "rule-2" ?id)))
+(clojure.core/ns-interns 'clara-lein.scratch)
+(ns-interns 'clara-lein.scratch)
 
-(defrule rule-3
-  "Arnold's birthday is September."
-  [Candidate (= ?id id)]
-  [:not [Candidate (= ?id id) (= september :arnold)]]
-  =>
-  (insert! (->Rulefail "rule-3" ?id)))
 
-(defrule rule-4
-  "Peter is 8yo."
-  [Candidate (= ?id id)]
-  [:not [Candidate (= ?id id) (= yo8 :peter)]]
-  =>
-  (insert! (->Rulefail "rule-4" ?id)))
+ 
 
 
 
+(clojure.core/in-ns 'clara-lein.scratch)
 
-;;; Queries
-(defquery get-rulefail
-  "Get failed rules"
-  []
-  [?rulefail <- Rulefail])
-
-
-
-;;; Session and fire
-
-(let [sess-init (mk-session)
-      sess-facts (apply insert (flatten [sess-init candidates]))
-      sess-fired (fire-rules sess-facts)
-      ;; All Rulefail objects returned in query
-      results (query sess-fired get-rulefail)
-      ;; Pull out ids of all candidates that failed a test, regardless of which
-      fail-candidate-ids (keys (group-by :candidate-id (map (comp first vals) results)))
-      ;; Collect ids for all failed candidates, setdiff possible candidate ids with failed ones.  Should leave 1 left.
-      id-success (first (clojure.set/difference (set (map :id candidates))  (set fail-candidate-ids)))]
-  ;; Retrieve record that has a successful id.
-  (println "Successful assignment")
-  (filter #(= id-success (:id %)) candidates))
+(def a 1)
 
