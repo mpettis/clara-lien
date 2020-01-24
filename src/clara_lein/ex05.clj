@@ -401,12 +401,33 @@ flatten
 
 
 ;; Let's get the rule violations for ones that violated just one rule.
+;; Just a few examples...
 (let [fail-ids (->> rulefails
-                      (map :id)
-                      frequencies
-                      (filter #(= 1 (second %)))
-                      (map first)
-                      set)]
-  (filter #(fail-ids (:id %)) rulefails))
+                    (map :id)
+                    frequencies
+                    (filter #(= 1 (second %)))
+                    (map first)
+                    set)]
+  (->> (filter #(fail-ids (:id %)) rulefails)
+       (take 5)))
 
+;;(#clara_lein.ex05.Rulefail{:rule-name "rule-1", :id 23100}
+;; #clara_lein.ex05.Rulefail{:rule-name "rule-8", :id 49033}
+;; #clara_lein.ex05.Rulefail{:rule-name "rule-7", :id 49039}
+;; #clara_lein.ex05.Rulefail{:rule-name "rule-1", :id 49044}
+;; #clara_lein.ex05.Rulefail{:rule-name "rule-9", :id 49045})
+
+
+
+;; For a given rulefail, go get the candidate that corresponds to it.
+(let [fail-ids (->> rulefails
+                    (map :id)
+                    frequencies
+                    (filter #(= 1 (second %)))
+                    (map first)
+                    set)
+      fails (filter #(fail-ids (:id %)) rulefails)
+      cands-filt (filter #(fail-ids (:id %)) cands)
+      ]
+  fails)
 
