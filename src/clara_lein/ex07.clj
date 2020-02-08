@@ -25,13 +25,12 @@
   [P (= ?p-truth truth-value)]
   [:test (= ?p-truth :true)]
   =>
-  [(insert! (->Q :true))])
+  (insert! (->Q :true)))
 
 ;;; Query
 (defquery has-q
   []
   [?q <- Q])
-
 
 ;;; Run session
 (comment
