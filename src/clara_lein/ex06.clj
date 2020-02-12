@@ -9,10 +9,11 @@
 ;;; Facts are in clara-ns-ex.facts ns
 ;;; Rules are in clara-ns-ex.rules ns
 ;;; Queries are in clara-ns-ex.queries
-(let [init-sess (mk-session 'clara-lein.ex06rules 'clara-lein.ex06queries)
-      fact-sess (insert-all init-sess facts/facts)]
-  (-> fact-sess
-      fire-rules
-      (query get-rulefail)))
+(comment
+  (let [init-sess (mk-session 'clara-lein.ex06rules 'clara-lein.ex06queries)
+        fact-sess (insert-all init-sess facts/facts)]
+    (-> fact-sess
+        fire-rules
+        (query get-rulefail))))
 
 

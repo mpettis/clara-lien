@@ -427,7 +427,6 @@ flatten
                     (map first)
                     set)
       fails (filter #(fail-ids (:id %)) rulefails)
-      cands-filt (filter #(fail-ids (:id %)) cands)
-      ]
+      cands-filt (filter #(fail-ids (:id %)) cands)]
   fails)
 

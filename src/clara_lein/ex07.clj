@@ -32,12 +32,12 @@
   []
   [?q <- Q])
 
-;;; Run session
-(comment
-  (let [sess (->
-               (mk-session)
-               (insert (->P :true))
-               fire-rules)]
-    (query sess has-q)))
 
+
+;;; Run session
+#_(let [sess (->
+             (mk-session)
+             (insert (->P :true))
+             fire-rules)]
+  (query sess has-q))
 
