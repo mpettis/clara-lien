@@ -100,7 +100,7 @@
                  fire-rules)
           qhpi (query sess query-house-parent-implication)
           qh (query sess query-house-obs)
-          qp (query sess query-parent-obs)
-          ]
-      [f p m d qhpi qh qp])))
+          qp (query sess query-parent-obs)]
+      ;[f p m d qhpi qh qp]
+    (println "F:" f ", P:" p ", M:" m ", D:" d "--- Final" (get-in (first qhpi) [:?q :truth-value])))))
 

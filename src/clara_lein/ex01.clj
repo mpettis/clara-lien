@@ -1,47 +1,86 @@
 (ns clara-lein.ex01
+  "Illustrate the following:
+    1. Simple Modus Ponens.
+
+         Modus Ponens:
+           P => Q
+           P
+           ------
+           Q
+      We do this by making a rule for P => Q, and inserting fact P.
+      When we fire the rules, Q gets inserted as a fact, and we can query for it.
+
+  2. Facts that are not present can trigger rules with `:not` operator.
+    We can fire a rule for the non-presence of a fact, and insert a fact based on that.
+  "
   (:require [clara.rules :refer :all]))
 
-;;; Taken directly from https://github.com/cerner/clara-rules
-;;; But my slight modification: try to make a vector of facts to insert.
-
-
-;;; Define records to use
-(defrecord SupportRequest [client level])
-
-(defrecord ClientRepresentative [name client])
-
-
-
-;;; Define facts in this var, to be used below
-(def facts [(->ClientRepresentative "Alice" "Acme")
-            (->SupportRequest "Acme" :high)])
 
 
 
 
-;;; Define rules
-(defrule is-important
-  "Find important support requests."
-  [SupportRequest (= :high level)]
+;;; Session 1: Simple Modus Ponens
+(ns sess1
+  (:require [clara.rules :refer :all]))
+
+;;; Records
+(defrecord P [])
+(defrecord Q [])
+
+;;; If P is true (present), and we have the rule P => Q,
+;;; then Q becomes a generated fact.
+(defrule rule-modus-ponens
+  "Pure Modus Ponens rule.  P => Q, which here means that if P is a true fact, insert true fact Q."
+  [P]
   =>
-  (println "High support requested!"))
+  (insert! (->Q)))
 
-(defrule notify-client-rep
-  "Find the client representative and send a notification of a support request."
-  [SupportRequest (= ?client client)]
-  [ClientRepresentative (= ?client client) (= ?name name)] ; Join via the ?client binding.
+
+;;;; Query for presence of Q
+(defquery has-q
+  []
+  [?q <- Q])
+
+
+;;;; Run the session
+(let [sess (->
+             (mk-session)
+             (insert (->P))
+             fire-rules)]
+  (query sess has-q))
+
+
+
+
+
+;;; Session 2: Rule fires when fact not present
+(ns sess2
+  (:require [clara.rules :refer :all]))
+
+;;; Records
+(defrecord P [])
+(defrecord Q [])
+
+;;; If P is true (present), and we have the rule P => Q,
+;;; then Q becomes a generated fact.
+(defrule rule-not-modus-ponens
+  "Not Modus Ponens rule.  ~P => Q, which here means that if P is false, or does not exist, insert true fact Q."
+  [:not [P]]
   =>
-  (println "Notify" ?name "that"  ?client "has a new support request!"))
+  (insert! (->Q)))
 
 
+;;;; Query for presence of Q
+(defquery has-q
+  []
+  [?q <- Q])
 
-;;; Fire rules, the facts are stored in `facts` var.
-(fire-rules (apply insert (flatten [(mk-session) facts])))
 
+;;;; Run the session
+;;;; Notice no fact P was inserted.
+(let [sess (->
+             (mk-session)
+             fire-rules)]
+  (query sess has-q))
 
-
-;;;; Prints this:
-
-;; High support requested!
-;; Notify Alice that Acme has a new support request!
 
