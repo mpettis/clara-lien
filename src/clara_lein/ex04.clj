@@ -39,6 +39,11 @@
     rec-list))
 
 
+;;; Look at the candidates
+(map (comp println (partial into {})) candidates)
+
+
+
 
 ;;; Rules
 ;;;
@@ -85,6 +90,7 @@
 
 
 ;;; Session and fire
+;;; I can do this better now, but this is my first pass...
 (let [sess-init (mk-session)
       sess-facts (apply insert (flatten [sess-init candidates]))
       sess-fired (fire-rules sess-facts)
@@ -100,3 +106,17 @@
 
 ;;;; Answer gotten:
 ;;;; (#clara_lein.ex04.Candidate{:id 21, :yo7 :eric, :yo8 :peter, :yo9 :arnold, :january :eric, :april :peter, :september :arnold})
+
+
+
+
+;;;; Show the rule failures
+(let [sess-init (mk-session)
+      sess-facts (apply insert (flatten [sess-init candidates]))
+      sess-fired (fire-rules sess-facts)
+      ;; All Rulefail objects returned in query
+      results (query sess-fired get-rulefail)]
+  ;; Retrieve record that has a successful id.
+  (println "Failures")
+  (map println results))
+
