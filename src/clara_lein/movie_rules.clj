@@ -3,7 +3,7 @@
 
   The case is that of a movie theater, and the rules are about who can get tickets to which movies based on the movie rating age restrictions.
 
-  G movies are for everybody, PG-13 movies are for those over 13 with an adult, and NC-17 means no one under 17 allowed, even with parent.
+  G movies are for everybody, PG-13 movies are for those over 13 or under 13 with an adult, and NC-17 means no one under 17 allowed, even with parent.
   "
   (:require [clara.rules :refer :all]))
 
