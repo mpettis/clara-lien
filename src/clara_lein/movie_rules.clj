@@ -1,4 +1,4 @@
-(ns clara-rules.movie-rules
+(ns clara-lein.movie-rules
   "This is a basic example showing an intuitive example of simple rules, facts and queries.
 
   The case is that of a movie theater, and the rules are about who can get tickets to which movies based on the movie rating age restrictions.
@@ -148,6 +148,7 @@
 ;;;
 
 
+
 ;; Query: What are all of the tickets issued?
 (defquery all-tickets
   "Get all tickets issued"
@@ -161,8 +162,28 @@
                fire-rules)
       myquery (query sess all-tickets)]
   ;; Basic query that will work, but adding stuff to it to make it more easily printable
-  ; (println myquery)
+  ;(println myquery)
   (map (comp println (partial into {}) :?tickets) myquery))
+
+;; Thse are all of the Tickets that are issued.  I push them into a map for easy reading,
+;; but they are all originally of the record type Ticket.
+;;
+;; For example, orginal record type:
+;;
+;; Ticket{:person-name :ellen, :movie-name Too Much Sex and Violence}
+;;
+;; output:
+;; {:person-name :ellen, :movie-name Too Much Sex and Violence}
+;; {:person-name :alice, :movie-name Kids Who Swear Sometimes}
+;; {:person-name :ellen, :movie-name Kids Who Swear Sometimes}
+;; {:person-name :dave, :movie-name Kids Who Swear Sometimes}
+;; {:person-name :carol, :movie-name Kids Who Swear Sometimes}
+;; {:person-name :carol, :movie-name Paint Dries}
+;; {:person-name :bob, :movie-name Paint Dries}
+;; {:person-name :ellen, :movie-name Paint Dries}
+;; {:person-name :alice, :movie-name Paint Dries}
+;; {:person-name :dave, :movie-name Paint Dries}
+;; (nil nil nil nil nil nil nil nil nil nil)
 
 
 
@@ -170,6 +191,7 @@
 
 ;;; Query: Movies that a given person can attend
 ;;; Adds a query that can take a parameter.  In this case, it is the name of a person for whom you want to see the available tickets.
+;;; Here we see what movies Alice can go to.  We get Tickets with the :person-name value equal to :alice.
 (defquery person-tickets
   "What tickets are available to a person?"
   [:?person-name]
@@ -184,4 +206,11 @@
   ;; Basic query that will work, but adding stuff to it to make it more easily printable
   ; (println myquery)
   (map (comp println (partial into {}) :?tickets) myquery))
+
+;; Remember, :alice is 8yo with a parent, so she can see a G and PG-13 movie if she'd like.
+;; output:
+;;
+;; {:person-name :alice, :movie-name Kids Who Swear Sometimes}
+;; {:person-name :alice, :movie-name Paint Dries}
+;; (nil nil)
 
